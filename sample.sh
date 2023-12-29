@@ -60,7 +60,7 @@ show_interactive() {
     sort --version-sort |
     uniq |
     fzf \
-      --height="50%" \
+      --height="100%" \
       --multi \
       --info=inline \
       --bind="ctrl-a:toggle-all" \
@@ -71,8 +71,8 @@ show_interactive() {
       --padding=0 \
       --margin=0 \
       --header="$header" \
-      --preview-window="bottom" |
       --preview="bash $script_dir/show_font.sh {2} '$message'" \
+      --preview-window="bottom:75%" |
     awk '{ print $2 }'
 }
 
