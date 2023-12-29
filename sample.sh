@@ -2,6 +2,17 @@
 
 script_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 
+show_help() {
+  echo "show a sample of all renderable fonts"
+  echo "usage: ${BASH_SOURCE[0]} [<option> ...] <message>"
+  echo ""
+  echo "options:"
+  echo "  -h, --help          show this help message and exit"
+  echo "  -d, --directory     path to directory of fonts"
+  echo "  -f, --font=<path>   path to font"
+  echo "  -i, --interactive   show interactive font selector"
+}
+
 find_fonts() {
   local path="$1"
   find "$path" \
@@ -74,17 +85,6 @@ show_interactive() {
       --preview="bash $script_dir/show_font.sh {2} '$message'" \
       --preview-window="bottom:75%" |
     awk '{ print $2 }'
-}
-
-show_help() {
-  echo "show a sample of all renderable fonts"
-  echo "usage: ${BASH_SOURCE[0]} [<option> ...] <message>"
-  echo ""
-  echo "options:"
-  echo "  -h, --help          show this help message and exit"
-  echo "  -d, --directory     path to directory of fonts"
-  echo "  -f, --font=<path>   path to font"
-  echo "  -i, --interactive   show interactive font selector"
 }
 
 # start script -----------------------------------------------------------------
