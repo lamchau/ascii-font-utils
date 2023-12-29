@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+script_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 
 find_fonts() {
   local path="$1"
@@ -37,7 +38,7 @@ show_font() {
     echo "error: missing show_font.sh"
     exit 1
   fi
-  bash show_font.sh "$@"
+  bash "$script_dir/show_font.sh" "$@"
 }
 
 show_interactive() {
@@ -70,8 +71,8 @@ show_interactive() {
       --padding=0 \
       --margin=0 \
       --header="$header" \
-      --preview="bash show_font.sh {2} '$message'" \
       --preview-window="bottom" |
+      --preview="bash $script_dir/show_font.sh {2} '$message'" \
     awk '{ print $2 }'
 }
 
