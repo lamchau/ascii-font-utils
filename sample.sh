@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 
-get_fonts() {
+
+find_fonts() {
+  local path="$1"
+  find "$path" \
+    -type f \
+    -name "*.flf" \
+    -o -name "*.tlf" |
+    sort --version-sort
+}
+
+get_installed_fonts() {
+  # other places to find fonts
+  #  - http://www.figlet.org/fontdb.cgi
+  #  - https://github.com/xero/figlet-fonts/blob/0c0697139d6db66878eee720ebf299bc3a605fd0/Examples.md
   local commands=(
     figlet
     toilet
@@ -14,11 +27,8 @@ get_fonts() {
     cmd_path="$(realpath "$(which "$cmd")")"
     parent_dir="$(dirname "$(dirname "$cmd_path")")"
     font_path="$(realpath "$parent_dir/share")"
-    find "$font_path" \
-      -type f \
-      -name "*.flf" \
-      -o -name "*.tlf" |
-      sort --version-sort
+
+    find_fonts "$font_path"
   done
 }
 
@@ -71,6 +81,7 @@ show_help() {
   echo ""
   echo "options:"
   echo "  -h, --help          show this help message and exit"
+  echo "  -d, --directory     path to directory of fonts"
   echo "  -f, --font=<path>   path to font"
   echo "  -i, --interactive   show interactive font selector"
 }
@@ -81,7 +92,6 @@ show_help() {
 declare -a font_paths=()
 message=""
 menu_interactive=0
-search_fonts=0
 
 while [[ $# -gt 0 ]]; do
   i="$1"
@@ -91,17 +101,16 @@ while [[ $# -gt 0 ]]; do
       exit 0
       ;;
 
-    -f=* | --font=*)
+    -f=* | --font=* | -d=* | --directory=*)
       opt_path="${i#*=}"
-      if [ "$search_fonts" -eq 0 ]; then
-        echo "searching for fonts..."
-        search_fonts=1
-      fi
-
       if [ -f "$opt_path" ]; then
         font_paths+=("$opt_path")
+      elif [ -d "$opt_path" ]; then
+        for path in $(find_fonts "$opt_path"); do
+          font_paths+=("$path")
+        done
       else
-        echo "error: font not found '$opt_path'"
+        echo "error: invalid path '$opt_path', skipping"
       fi
       shift
       ;;
@@ -120,8 +129,8 @@ done
 # end: options------------------------------------------------------------------
 
 if [ "${#font_paths[@]}" -eq 0 ]; then
-  echo "searching for fonts..."
-  for path in $(get_fonts); do
+  echo "no font path(s) specified, searching for installed fonts..."
+  for path in $(get_installed_fonts); do
     font_paths+=("$path")
   done
 fi
